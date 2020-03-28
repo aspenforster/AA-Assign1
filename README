@@ -1,0 +1,10 @@
+Just putting some stuff here for easy reference
+
+EN <procLabel> <vt> - enqueue
+DE <procLabel> <vt> - dequeue
+FP <procLabel> - find process with procLabel
+RP <procLabel> - remove process with procLabel
+PT <procLabel> - calculate runtime of all preceeding procs
+ST <procLabel> - calculate runtime of all suceeeding procs
+PA - print labels of all procs in ascending order
+Q - quit

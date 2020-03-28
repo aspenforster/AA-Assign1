@@ -11,6 +11,7 @@ import java.lang.String;
  */
 public class BinarySearchTreeRQ implements Runqueue {
 
+    private Proc rootProc = null;
     /**
      * Constructs empty queue
      */
@@ -23,7 +24,18 @@ public class BinarySearchTreeRQ implements Runqueue {
     @Override
     public void enqueue(String procLabel, int vt) {
         // Implement me
+        if (rootProc == null){
+            rootProc = new Proc(procLabel, vt);
 
+            Proc testLeftProc = new Proc("left test", 100);
+            Proc testRightProc = new Proc("right test", 500);
+
+            testLeftProc.setleftProc(new Proc("l2", 50));
+            testLeftProc.setRightProc(new Proc("r2", 150));
+            rootProc.setleftProc(testLeftProc);
+            rootProc.setRightProc(testRightProc);
+            System.out.println("created root process");
+        }
     } // end of enqueue()
 
 
@@ -70,7 +82,7 @@ public class BinarySearchTreeRQ implements Runqueue {
     @Override
     public void printAllProcesses(PrintWriter os) {
         // Implement me
-
+        System.out.println(rootProc.printProc());
     } // end of printAllProcess()
 
 } // end of class BinarySearchTreeRQ
