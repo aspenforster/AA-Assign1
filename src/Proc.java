@@ -1,4 +1,6 @@
-public class Proc{
+package src;
+
+public class Proc {
     private String procLabel;
     private int vt;
     private Proc leftProc;

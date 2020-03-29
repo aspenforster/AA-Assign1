@@ -1,3 +1,5 @@
+package src;
+
 import java.io.PrintWriter;
 import java.lang.String;
 
@@ -12,12 +14,34 @@ import java.lang.String;
  */
 public class OrderedArrayRQ implements Runqueue {
 
+    private class Proc{
+
+        private String procLabel;
+        private int virtualRuntime;
+
+        public Proc(String procLabel, int virtualRuntime){
+            this.procLabel = procLabel;
+            this.virtualRuntime = virtualRuntime;
+        }
+
+        public String getLabel(){
+            return this.procLabel;
+        }
+
+        public int getVirtualRuntime(){
+            return this.virtualRuntime;
+        }
+
+    }
+
+    private Proc[] procArray;
     /**
      * Constructs empty queue
      */
     public OrderedArrayRQ() {
         // Implement Me
-
+        procArray = new Proc[1];
+        System.out.println(procArray);
     }  // end of OrderedArrayRQ()
 
 
