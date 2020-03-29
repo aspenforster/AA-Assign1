@@ -1,4 +1,4 @@
-package src;
+//package src;
 
 import java.io.PrintWriter;
 import java.lang.String;
@@ -12,7 +12,11 @@ import java.lang.String;
  * @author Sajal Halder, Minyi Li, Jeffrey Chan
  */
 public class BinarySearchTreeRQ implements Runqueue {
-
+    
+    
+    Object nodeData;
+        
+        
     private Proc rootProc = null;
     /**
      * Constructs empty queue
@@ -86,5 +90,37 @@ public class BinarySearchTreeRQ implements Runqueue {
         // Implement me
         System.out.println(rootProc.printProc());
     } // end of printAllProcess()
+    
+    private class Proc
+    {
+        private String procLabel;
+        private int virtualRuntime;
+        private Proc previousNode;
+        private Proc currentNode;
+        private Proc leftChild;
+        private Proc rightChild;
 
+        public Proc(String procLabel, int virtualRuntime, Proc currentNode) {
+            this.procLabel = procLabel;
+            this.virtualRuntime = virtualRuntime;
+            leftChild = null;
+            rightChild = null;;
+        }
+
+        public String getProcLabel() {
+            return procLabel;
+        }
+        
+        public int getVirtualRuntime() {
+            return virtualRuntime;
+        }
+
+        public Proc getNext() {
+            return previousNode;
+        }
+
+        public void setNext(Proc nextProc) {
+            this.previousNode = nextProc;
+        }
+    } // end of inner class Node
 } // end of class BinarySearchTreeRQ
