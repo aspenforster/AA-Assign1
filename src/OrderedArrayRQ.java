@@ -1,4 +1,4 @@
-package src;
+//package src;
 
 import java.io.PrintWriter;
 import java.lang.String;
@@ -97,5 +97,20 @@ public class OrderedArrayRQ implements Runqueue {
         //Implement me
 
     } // end of printAllProcesses()
+    
+    
+    private Object resize (Object oldObj, int newsize) {
+        int oldSize = java.lang.reflect.Array.getLength(oldObj);
+        Class elementType = oldObj.getClass().getComponentType();
+        Object newObj = java.lang.reflect.Array.newInstance(elementType, newsize);
 
+        int preserveLength = Math.min(oldSize,  newsize);
+
+        if (preserveLength > 0) {
+            System.arraycopy(oldObj, 0, newObj, 0, preserveLength);
+        }
+
+        return newObj;
+    }
+    
 } // end of class OrderedArrayRQ

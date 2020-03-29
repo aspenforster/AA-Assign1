@@ -1,4 +1,4 @@
-package src;
+//package src;
 
 import java.io.PrintWriter;
 import java.lang.String;
@@ -14,55 +14,55 @@ import java.lang.String;
 public class OrderedLinkedListRQ implements Runqueue {
 
     //First node in the list
-    private Node FirstNode;
+    private Proc FirstProc;
         
     public OrderedLinkedListRQ() {
-        FirstNode = null;
+        FirstProc = null;
     }  // end of OrderedLinkedList()
 
     @Override
     public void enqueue(String procLabel, int vt) {
         
-        Node newNode = new Node(procLabel, vt);
+        Proc newNode = new Proc(procLabel, vt);
         
-        if(FirstNode == null) {
-            FirstNode = newNode;
+        if(FirstProc == null) {
+            FirstProc = newNode;
         }
         else {
             // need to search through and compare vt and then insert
             // Processes that have the same vruntime follow the FIFO order.
             // Therefore vt needs to be less than node validating against (loop) thought all nodes and stop at null
             
-            Node currentNode = FirstNode;
-            Node previousNode = null;
+            Proc currentProc = FirstProc;
+            Proc previousProc = null;
           
             //Check the first node
             
-            if (vt < currentNode.getVirtualRuntime()) {
+            if (vt < currentProc.getVirtualRuntime()) {
  
-                newNode.setNext(FirstNode);
-                FirstNode = newNode;
+                newNode.setNext(FirstProc);
+                FirstProc = newNode;
             } else {
-                previousNode = currentNode;
-                currentNode = currentNode.getNext();
+                previousProc = currentProc;
+                currentProc = currentProc.getNext();
                 boolean insertComplete = false;
-                while (currentNode != null && insertComplete == false) {
+                while (currentProc != null && insertComplete == false) {
 
-                    if (vt < currentNode.getVirtualRuntime()){
+                    if (vt < currentProc.getVirtualRuntime()){
  
-                        newNode.setNext(currentNode);// insert new node, set new nodes next to current node
-                        previousNode.setNext(newNode); // set previous
+                        newNode.setNext(currentProc);// insert new node, set new nodes next to current node
+                        previousProc.setNext(newNode); // set previous
                         insertComplete = true;
                     }   
 
-                    previousNode = currentNode;
-                    currentNode = currentNode.getNext();
+                    previousProc = currentProc;
+                    currentProc = currentProc.getNext();
 
                 };
                 
                 //If an insert hasnt taken place, add the new node to the end
                 if (insertComplete == false) {
-                    previousNode.setNext(newNode); 
+                    previousProc.setNext(newNode); 
                 }
             }       
         }
@@ -72,12 +72,12 @@ public class OrderedLinkedListRQ implements Runqueue {
 
     @Override
     public String dequeue() {
-        if(FirstNode == null) {
+        if(FirstProc == null) {
             return "";
         }
         else {
-            String procLabel = FirstNode.getProcLabel();
-            FirstNode = FirstNode.nextNode; //Original first Node will automatically delete with garbage collector
+            String procLabel = FirstProc.getProcLabel();
+            FirstProc = FirstProc.nextProc; //Original first Node will automatically delete with garbage collector
             return procLabel; 
         }
     } // end of dequeue()
@@ -85,13 +85,13 @@ public class OrderedLinkedListRQ implements Runqueue {
 
     @Override
     public boolean findProcess(String procLabel) {
-        Node currentNode = FirstNode;
+        Proc currentProc = FirstProc;
         
-        while (currentNode != null) {
-            if (procLabel.equals(currentNode.getProcLabel())) {
+        while (currentProc != null) {
+            if (procLabel.equals(currentProc.getProcLabel())) {
                 return true;
             }
-            currentNode = currentNode.getNext();
+            currentProc = currentProc.getNext();
         }
 
         return false; 
@@ -100,23 +100,23 @@ public class OrderedLinkedListRQ implements Runqueue {
 
     @Override
     public boolean removeProcess(String procLabel) {
-        Node currentNode = FirstNode;
-        Node previousNode = null;
+        Proc currentProc = FirstProc;
+        Proc previousProc = null;
         
-        while (currentNode != null) {
+        while (currentProc != null) {
             
-            if (procLabel.equals(currentNode.getProcLabel())) {
-                if (previousNode == null) {
-                    FirstNode = null;
+            if (procLabel.equals(currentProc.getProcLabel())) {
+                if (previousProc == null) {
+                    FirstProc = null;
                     return true;
                 }
                 else {
-                    previousNode.setNext(currentNode.getNext());
+                    previousProc.setNext(currentProc.getNext());
                     return true;
                 }
             }
-            previousNode = currentNode;
-            currentNode = currentNode.getNext();
+            previousProc = currentProc;
+            currentProc = currentProc.getNext();
         }
 
         return false;
@@ -125,16 +125,16 @@ public class OrderedLinkedListRQ implements Runqueue {
 
     @Override
     public int precedingProcessTime(String procLabel) {
-        Node currentNode = FirstNode;
+        Proc currentProc = FirstProc;
         int totalTime = 0;
         
-        while (currentNode != null) {
-            totalTime += currentNode.getVirtualRuntime();
+        while (currentProc != null) {
+            totalTime += currentProc.getVirtualRuntime();
             
-            if (procLabel.equals(currentNode.getProcLabel())) {
+            if (procLabel.equals(currentProc.getProcLabel())) {
                 return totalTime;
             }
-            currentNode = currentNode.getNext();
+            currentProc = currentProc.getNext();
         }
 
         return -1; 
@@ -143,20 +143,20 @@ public class OrderedLinkedListRQ implements Runqueue {
 
     @Override
     public int succeedingProcessTime(String procLabel) {
-        Node currentNode = FirstNode;
+        Proc currentProc = FirstProc;
         int totalTime = 0;
         boolean nodeFound = false;
         
-        while (currentNode != null) {
+        while (currentProc != null) {
             
-            if (procLabel.equals(currentNode.getProcLabel())) {
+            if (procLabel.equals(currentProc.getProcLabel())) {
                 nodeFound = true;
             }
             
             if (nodeFound == true){
-                totalTime += currentNode.getVirtualRuntime();
+                totalTime += currentProc.getVirtualRuntime();
             }
-            currentNode = currentNode.getNext();
+            currentProc = currentProc.getNext();
         }
         
         if (nodeFound == true){
@@ -170,30 +170,30 @@ public class OrderedLinkedListRQ implements Runqueue {
 
     @Override
     public void printAllProcesses(PrintWriter os) {
-        Node currentNode = FirstNode;
+        Proc currentProc = FirstProc;
         String output = "";
         
-        while (currentNode != null) {
+        while (currentProc != null) {
             
-            output = output + currentNode.getProcLabel() + " ";
+            output = output + currentProc.getProcLabel() + " ";
             
-            currentNode = currentNode.getNext();
+            currentProc = currentProc.getNext();
         }
         
         System.out.println(output);
 
     } // end of printAllProcess()
     
-    private class Node
+    private class Proc
     {
         private String procLabel;
         private int virtualRuntime;
-        private Node nextNode;
+        private Proc nextProc;
 
-        public Node(String procLabel, int virtualRuntime) {
+        public Proc(String procLabel, int virtualRuntime) {
             this.procLabel = procLabel;
             this.virtualRuntime = virtualRuntime;
-            nextNode = null;
+            nextProc = null;
         }
 
         public String getProcLabel() {
@@ -204,12 +204,12 @@ public class OrderedLinkedListRQ implements Runqueue {
             return virtualRuntime;
         }
 
-        public Node getNext() {
-            return nextNode;
+        public Proc getNext() {
+            return nextProc;
         }
 
-        public void setNext(Node nextNode) {
-            this.nextNode = nextNode;
+        public void setNext(Proc nextProc) {
+            this.nextProc = nextProc;
         }
-    } // end of inner class Node
+    } // end of inner class Proc
 } // end of class OrderedLinkedListRQ
