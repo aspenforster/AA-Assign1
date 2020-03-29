@@ -35,23 +35,28 @@ public class OrderedLinkedListRQ implements Runqueue {
             Node previousNode = null;
           
             //Check the first node
-            if (currentNode.getVirtualRuntime() < vt) {
+            
+            if (vt < currentNode.getVirtualRuntime()) {
+ 
                 newNode.setNext(FirstNode);
                 FirstNode = newNode;
             } else {
                 previousNode = currentNode;
                 currentNode = currentNode.getNext();
                 boolean insertComplete = false;
-                do {
-                    if (currentNode.getVirtualRuntime() < vt){
+                while (currentNode != null && insertComplete == false) {
+
+                    if (vt < currentNode.getVirtualRuntime()){
+ 
                         newNode.setNext(currentNode);// insert new node, set new nodes next to current node
                         previousNode.setNext(newNode); // set previous
                         insertComplete = true;
-                    }
-                    
+                    }   
+
                     previousNode = currentNode;
                     currentNode = currentNode.getNext();
-                } while (currentNode != null && insertComplete == false);
+
+                };
                 
                 //If an insert hasnt taken place, add the new node to the end
                 if (insertComplete == false) {
