@@ -29,19 +29,39 @@ public class Proc {
         return rightProc;
     }
 
-    public void setleftProc(Proc proc){
-        if (leftProc == null){
-            leftProc = proc;
-        } else {
-
-        }
+    public void setLeftProc(Proc proc){
+        this.leftProc = proc;
     }
 
     public void setRightProc(Proc proc){
-        rightProc = proc;
+        this.rightProc = proc;
+    }
+
+    public Proc recurseLeft(){
+        System.out.println("recursing left -> " + this.procLabel + "- " + this.vt);
+        if (leftProc.getLeftProc() == null){
+            return leftProc;
+        } else {
+            System.out.println("break here? " + this.procLabel + "- " + this.vt);
+            leftProc.recurseLeft();
+        }
+        return null;
     }
 
     public void setProc(Proc proc){
+        if(proc.getVT() > vt){
+            if (this.rightProc != null){
+                rightProc.setProc(proc);
+            } else {
+                setRightProc(proc);
+            }
+        } else {
+            if (this.leftProc != null){
+                leftProc.setProc(proc);
+            } else {
+                setLeftProc(proc);
+            }
+        }
     }
 
     public String printProc(){
