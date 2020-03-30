@@ -1,8 +1,9 @@
-//package src;
+package src;
 
 import java.io.PrintWriter;
 import java.lang.String;
 
+import src.Proc;
 /**
  * Implementation of the Runqueue interface using a Binary Search Tree.
  *
@@ -91,36 +92,36 @@ public class BinarySearchTreeRQ implements Runqueue {
         System.out.println(rootProc.printProc());
     } // end of printAllProcess()
     
-    private class Proc
-    {
-        private String procLabel;
-        private int virtualRuntime;
-        private Proc previousNode;
-        private Proc currentNode;
-        private Proc leftChild;
-        private Proc rightChild;
+    // private class Proc
+    // {
+    //     private String procLabel;
+    //     private int virtualRuntime;
+    //     private Proc previousNode;
+    //     private Proc currentNode;
+    //     private Proc leftChild;
+    //     private Proc rightChild;
 
-        public Proc(String procLabel, int virtualRuntime, Proc currentNode) {
-            this.procLabel = procLabel;
-            this.virtualRuntime = virtualRuntime;
-            leftChild = null;
-            rightChild = null;;
-        }
+    //     public Proc(String procLabel, int virtualRuntime, Proc currentNode) {
+    //         this.procLabel = procLabel;
+    //         this.virtualRuntime = virtualRuntime;
+    //         leftChild = null;
+    //         rightChild = null;;
+    //     }
 
-        public String getProcLabel() {
-            return procLabel;
-        }
+    //     public String getProcLabel() {
+    //         return procLabel;
+    //     }
         
-        public int getVirtualRuntime() {
-            return virtualRuntime;
-        }
+    //     public int getVirtualRuntime() {
+    //         return virtualRuntime;
+    //     }
 
-        public Proc getNext() {
-            return previousNode;
-        }
+    //     public Proc getNext() {
+    //         return previousNode;
+    //     }
 
-        public void setNext(Proc nextProc) {
-            this.previousNode = nextProc;
-        }
-    } // end of inner class Node
+    //     public void setNext(Proc nextProc) {
+    //         this.previousNode = nextProc;
+    //     }
+    // } // end of inner class Node
 } // end of class BinarySearchTreeRQ

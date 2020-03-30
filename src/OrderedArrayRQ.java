@@ -1,4 +1,4 @@
-//package src;
+package src;
 
 import java.io.PrintWriter;
 import java.lang.String;
@@ -41,15 +41,7 @@ public class OrderedArrayRQ implements Runqueue {
      */
     public OrderedArrayRQ() {
         // Implement Me
-        procArray = new Proc[6];
-        procArray[0] = new Proc("t0", 1000);
-        procArray[1] = new Proc("t1", 700);
-        procArray[2] = new Proc("t2", 200);
-
-        procArray[3] = new Proc("t3", 100);
-        procArray[4] = new Proc("t4", 50);
-        procArray[5] = new Proc("t5", 20);
-        procLength = 6;
+        procArray = new Proc[1];
         System.out.println(procArray);
     }  // end of OrderedArrayRQ()
 
@@ -137,33 +129,64 @@ public class OrderedArrayRQ implements Runqueue {
 
     @Override
     public boolean findProcess(String procLabel){
-        // Implement me
-       
-        return false; // placeholder, modify this
+       for (int i =0; i < procLength; i++){
+           if (procArray[i].getLabel().equals(procLabel)){
+              return true;
+           }
+       }
+        return false; 
     } // end of findProcess()
 
 
     @Override
     public boolean removeProcess(String procLabel) {
-        // Implement me
 
-        return false; // placeholder, modify this
+        //getprocessID returns index if found, -1 if not
+        int procIndex = getProcessID(procLabel);
+
+        if (procIndex >= 0){
+            System.out.println(procIndex);
+            System.arraycopy(procArray, procIndex + 1, procArray, procIndex, procLength - procIndex - 1);
+            procLength--;
+            return true;
+        }
+        
+        return false; 
     } // end of removeProcess()
-
 
     @Override
     public int precedingProcessTime(String procLabel) {
-        // Implement me
+        
+        //getprocessID returns index if found, -1 if not
+        int procIndex = getProcessID(procLabel);
 
-        return -1; // placeholder, modify this
+        int preProcTime = 0;
+
+        if(procIndex >=0){
+            for(int i=procIndex + 1; i < procLength; i++){
+                preProcTime += procArray[i].getVirtualRuntime();
+            }
+            System.out.println(preProcTime);
+            return preProcTime;
+        } 
+        return -1;
+
     }// end of precedingProcessTime()
-
 
     @Override
     public int succeedingProcessTime(String procLabel) {
-        // Implement me
+        
+        //getprocessID returns index if found, -1 if not
+        int procIndex = getProcessID(procLabel);
 
-        return -1; // placeholder, modify this
+        int sucProcTime = 0;
+        if (procIndex >=0){
+            for(int i=0; i < procIndex; i++){
+                sucProcTime += procArray[i].getVirtualRuntime();
+            }
+            return sucProcTime;
+        }
+        return -1; 
     } // end of precedingProcessTime()
 
 
@@ -174,20 +197,16 @@ public class OrderedArrayRQ implements Runqueue {
         }
         
     } // end of printAllProcesses()
-    
-    
-    private Object resize (Object oldObj, int newsize) {
-        int oldSize = java.lang.reflect.Array.getLength(oldObj);
-        Class elementType = oldObj.getClass().getComponentType();
-        Object newObj = java.lang.reflect.Array.newInstance(elementType, newsize);
 
-        int preserveLength = Math.min(oldSize,  newsize);
 
-        if (preserveLength > 0) {
-            System.arraycopy(oldObj, 0, newObj, 0, preserveLength);
+    public int getProcessID(String procLabel){
+        int procIndex = -1;
+        for(int i=0; i < procLength; i++){
+            if(procArray[i].getLabel().equals(procLabel)){
+                procIndex = i;
+            }
         }
-
-        return newObj;
+        return procIndex;
     }
     
 } // end of class OrderedArrayRQ
