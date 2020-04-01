@@ -37,19 +37,8 @@ public class Proc {
         this.rightProc = proc;
     }
 
-    public Proc recurseLeft(){
-        System.out.println("recursing left -> " + this.procLabel + "- " + this.vt);
-        if (leftProc.getLeftProc() == null){
-            return leftProc;
-        } else {
-            System.out.println("break here? " + this.procLabel + "- " + this.vt);
-            leftProc.recurseLeft();
-        }
-        return null;
-    }
-
     public void setProc(Proc proc){
-        if(proc.getVT() > vt){
+        if(proc.getVT() >= vt){
             if (this.rightProc != null){
                 rightProc.setProc(proc);
             } else {
@@ -62,6 +51,26 @@ public class Proc {
                 setLeftProc(proc);
             }
         }
+    }
+
+    public boolean checkChildren(String procLabel){
+
+        //if this node has the right label, return true
+        if (this.getLabel().equals(procLabel)){
+            return true;
+        }
+
+        Boolean isLabelFound = false;
+
+        if (leftProc != null){
+            isLabelFound = leftProc.checkChildren(procLabel);
+        }
+
+        //if it has a right child AND 'labelFound' is still false
+        if (rightProc!= null && !isLabelFound){
+            isLabelFound = rightProc.checkChildren(procLabel);
+        }
+        return isLabelFound;
     }
 
     public String printProc(){
@@ -81,5 +90,9 @@ public class Proc {
             s += ".r";
         }
         return s;
+    }
+
+    public String printP(){
+        return procLabel;
     }
 } 
