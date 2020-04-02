@@ -3,6 +3,7 @@
 import java.io.PrintWriter;
 import java.lang.String;
 
+import src.Proc;
 /**
  * Implementation of the Runqueue interface using a Binary Search Tree.
  *
@@ -13,18 +14,17 @@ import java.lang.String;
  */
 public class BinarySearchTreeRQ implements Runqueue {
     
-    
+   
      //First node in the list
     private Proc FirstProc;
         
-    
     public BinarySearchTreeRQ() {
         FirstProc = null;
     }  // end of BinarySearchTreeRQ()
 
-
     @Override
     public void enqueue(String procLabel, int vt) {
+
         Proc newNode = new Proc(procLabel, vt);
         boolean complete = false;
         
@@ -55,6 +55,7 @@ public class BinarySearchTreeRQ implements Runqueue {
                     currentProc = currentProc.getRight();
                 }
             }    
+
         }
  
     } // end of enqueue()
@@ -63,16 +64,14 @@ public class BinarySearchTreeRQ implements Runqueue {
     @Override
     public String dequeue() {
         //find the first node
-        
-        
-        //copy largest value of left subtree into node to delete, if no left node raise the right node
 
-        return ""; // placeholder, modify this
+        return "";
     } // end of dequeue()
 
 
     @Override
     public boolean findProcess(String procLabel) {
+
         Proc currentProc = FirstProc; // currentProc = Parent
         Proc lastNode = null;
         Boolean endOfTree = false;
@@ -126,6 +125,7 @@ public class BinarySearchTreeRQ implements Runqueue {
         }
 
         return false; 
+
     } // end of findProcess()
 
 
@@ -265,6 +265,7 @@ public class BinarySearchTreeRQ implements Runqueue {
 
     @Override
     public void printAllProcesses(PrintWriter os) {
+
         Proc currentProc = FirstProc; // currentProc = Parent
         Proc lastNode = null;
         Boolean endOfTree = false;
@@ -316,7 +317,7 @@ public class BinarySearchTreeRQ implements Runqueue {
             
             os.print(output);
         }
-    } // end of printAllProcess()
+    } // end of printAllProcess()   
     
     private class Proc
     {
@@ -330,24 +331,14 @@ public class BinarySearchTreeRQ implements Runqueue {
         public Proc(String procLabel, int virtualRuntime) {
             this.procLabel = procLabel;
             this.virtualRuntime = virtualRuntime;
-            previousProc = null;
-            currentProc = null;
             leftChild = null;
             rightChild = null;;
         }
-        
-        public Proc getCurrentProc() {
-            return currentProc;
-        }
-        
-        public void setCurrentProc(Proc currentProc) {
-            this.currentProc = currentProc;
-        }
-        
+
         public String getProcLabel() {
             return procLabel;
         }
-        
+
         public int getVirtualRuntime() {
             return virtualRuntime;
         }
@@ -376,6 +367,5 @@ public class BinarySearchTreeRQ implements Runqueue {
             this.previousProc = previousProc;
         }
         
-        
-    } // end of inner class Node
+    } 
 } // end of class BinarySearchTreeRQ
