@@ -14,40 +14,58 @@ import java.lang.String;
 public class BinarySearchTreeRQ implements Runqueue {
     
     
-    Object nodeData;
+     //First node in the list
+    private Proc FirstProc;
         
-        
-    private Proc rootProc = null;
-    /**
-     * Constructs empty queue
-     */
+    
     public BinarySearchTreeRQ() {
-        // Implement Me
-
+        FirstProc = null;
     }  // end of BinarySearchTreeRQ()
 
 
     @Override
     public void enqueue(String procLabel, int vt) {
-        // Implement me
-        if (rootProc == null){
-            rootProc = new Proc(procLabel, vt);
-
-            Proc testLeftProc = new Proc("left test", 100);
-            Proc testRightProc = new Proc("right test", 500);
-
-            testLeftProc.setleftProc(new Proc("l2", 50));
-            testLeftProc.setRightProc(new Proc("r2", 150));
-            rootProc.setleftProc(testLeftProc);
-            rootProc.setRightProc(testRightProc);
-            System.out.println("created root process");
+        Proc newNode = new Proc(procLabel, vt);
+        boolean complete = false;
+        
+        //Check the first node
+        if(FirstProc == null) {
+            FirstProc = newNode;
         }
+        else {
+            
+            Proc currentProc = FirstProc;
+            //Proc previousProc = null; might need to assign need to confirm if tree has to be balanced
+            
+            while (currentProc != null && complete == false) {
+                if (vt < currentProc.getVirtualRuntime()) {
+                    if(currentProc.getLeft() == null){
+                        currentProc.setLeft(newNode);
+                        newNode.setPreviousProc(currentProc);
+                        complete = true;
+                    } 
+                    currentProc = currentProc.getLeft();
+                    
+                } else {
+                    if(currentProc.getRight() == null){
+                        currentProc.setRight(newNode);
+                        newNode.setPreviousProc(currentProc);
+                        complete = true;
+                    } 
+                    currentProc = currentProc.getRight();
+                }
+            }    
+        }
+ 
     } // end of enqueue()
 
 
     @Override
     public String dequeue() {
-        // Implement me
+        //find the first node
+        
+        
+        //copy largest value of left subtree into node to delete, if no left node raise the right node
 
         return ""; // placeholder, modify this
     } // end of dequeue()
@@ -55,9 +73,59 @@ public class BinarySearchTreeRQ implements Runqueue {
 
     @Override
     public boolean findProcess(String procLabel) {
-        // Implement me
+        Proc currentProc = FirstProc; // currentProc = Parent
+        Proc lastNode = null;
+        Boolean endOfTree = false;
+        boolean leftFlag = false;
 
-        return false; // placeholder, modify this
+        if (currentProc == null) {
+            return false;
+        } else {
+            
+            do {
+                    //got to the bottom left hand branch
+                if (currentProc.getLeft() != null && leftFlag == false) {
+                    currentProc = currentProc.getLeft();
+
+                } else {
+                    
+                    if (currentProc.getProcLabel().equals(procLabel)){
+                        return true;
+                    }
+
+                    leftFlag = true;
+
+                    if (currentProc.getRight() != null) {
+                        currentProc = currentProc.getRight();
+                        leftFlag = false;
+                    } else {
+                        if (currentProc == FirstProc && currentProc.getRight() == null){
+                            
+                            endOfTree = true;
+                        } else {
+                            lastNode = currentProc;                        
+                            currentProc = currentProc.getPreviousProc();
+
+
+                            if (currentProc.getLeft() == lastNode) {
+                                leftFlag = true;
+                            } else {
+                                while (currentProc.getRight() == lastNode && endOfTree != true) {
+                                    if (currentProc == FirstProc){
+                                        endOfTree = true;
+                                    } else {
+                                        lastNode = currentProc;                        
+                                        currentProc = currentProc.getPreviousProc();
+                                    }
+                                } 
+                            } 
+                        } 
+                    }   
+                }  
+            } while (endOfTree == false);
+        }
+
+        return false; 
     } // end of findProcess()
 
 
@@ -71,42 +139,211 @@ public class BinarySearchTreeRQ implements Runqueue {
 
     @Override
     public int precedingProcessTime(String procLabel) {
-        // Implement me
+        Proc currentProc = FirstProc; // currentProc = Parent
+        Proc lastNode = null;
+        Boolean endOfTree = false;
+        boolean leftFlag = false;
+        int totalTime = 0;
 
-        return -1; // placeholder, modify this
+        if (currentProc == null) {
+            return -1;
+        } else {
+            
+            do {
+                    //got to the bottom left hand branch
+                if (currentProc.getLeft() != null && leftFlag == false) {
+                    currentProc = currentProc.getLeft();
+
+                } else {
+
+                    if (currentProc.getProcLabel().equals(procLabel)){
+                        return totalTime;
+                    }
+                    
+                    totalTime = totalTime + currentProc.getVirtualRuntime();
+
+                    leftFlag = true;
+
+                    if (currentProc.getRight() != null) {
+                        currentProc = currentProc.getRight();
+                        leftFlag = false;
+                    } else {
+                        if (currentProc == FirstProc && currentProc.getRight() == null){
+                            endOfTree = true;
+                        } else {
+                            lastNode = currentProc;                        
+                            currentProc = currentProc.getPreviousProc();
+
+
+                            if (currentProc.getLeft() == lastNode) {
+                                leftFlag = true;
+                            } else {
+                                while (currentProc.getRight() == lastNode && endOfTree != true) {
+                                    if (currentProc == FirstProc){
+                                        endOfTree = true;
+                                    } else {
+                                        lastNode = currentProc;                        
+                                        currentProc = currentProc.getPreviousProc();
+                                    }
+                                } 
+                            } 
+                        } 
+                    }   
+                }  
+            } while (endOfTree == false);
+        }
+
+        return -1; 
     } // end of precedingProcessTime()
 
 
     @Override
     public int succeedingProcessTime(String procLabel) {
-        // Implement me
+        Proc currentProc = FirstProc; // currentProc = Parent
+        Proc lastNode = null;
+        Boolean endOfTree = false;
+        boolean leftFlag = false;
+        int totalTime = 0;
+        boolean procFound = false;
 
-        return -1; // placeholder, modify this
+        if (currentProc == null) {
+            return -1;
+        } else {
+            
+            do {
+                    //got to the bottom left hand branch
+                if (currentProc.getLeft() != null && leftFlag == false) {
+                    currentProc = currentProc.getLeft();
+
+                } else {
+                    
+                    if (procFound == true) {
+                        totalTime = totalTime + currentProc.getVirtualRuntime();
+                    }
+
+                    if (currentProc.getProcLabel().equals(procLabel)){
+                        procFound = true;
+                    }
+
+                    leftFlag = true;
+
+                    if (currentProc.getRight() != null) {
+                        currentProc = currentProc.getRight();
+                        leftFlag = false;
+                    } else {
+                        if (currentProc == FirstProc && currentProc.getRight() == null){
+                            endOfTree = true;
+                        } else {
+                            lastNode = currentProc;                        
+                            currentProc = currentProc.getPreviousProc();
+
+
+                            if (currentProc.getLeft() == lastNode) {
+                                leftFlag = true;
+                            } else {
+                                while (currentProc.getRight() == lastNode && endOfTree != true) {
+                                    if (currentProc == FirstProc){
+                                        endOfTree = true;
+                                    } else {
+                                        lastNode = currentProc;                        
+                                        currentProc = currentProc.getPreviousProc();
+                                    }
+                                } 
+                            } 
+                        } 
+                    }   
+                }  
+            } while (endOfTree == false);
+        }
+        if (procFound == true) {
+            return totalTime;
+        } else {
+            return -1; 
+        }
     } // end of precedingProcessTime()
 
 
     @Override
     public void printAllProcesses(PrintWriter os) {
-        // Implement me
-        System.out.println(rootProc.printProc());
+        Proc currentProc = FirstProc; // currentProc = Parent
+        Proc lastNode = null;
+        Boolean endOfTree = false;
+        boolean leftFlag = false;
+        String output = "";
+
+        if (currentProc == null) {
+            os.print(output);
+        } else { 
+            
+            do {
+                    //got to the bottom left hand branch
+                if (currentProc.getLeft() != null && leftFlag == false) {
+                    currentProc = currentProc.getLeft();
+
+                } else {
+                    
+                    output = currentProc.getProcLabel() + " ";
+                    leftFlag = true;
+
+                    if (currentProc.getRight() != null) {
+                        currentProc = currentProc.getRight();
+                        leftFlag = false;
+                    } else {
+                        if (currentProc == FirstProc && currentProc.getRight() == null){
+                            
+                            endOfTree = true;
+                        } else {
+                            lastNode = currentProc;                        
+                            currentProc = currentProc.getPreviousProc();
+
+
+                            if (currentProc.getLeft() == lastNode) {
+                                leftFlag = true;
+                            } else {
+                                while (currentProc.getRight() == lastNode && endOfTree != true) {
+                                    if (currentProc == FirstProc){
+                                        endOfTree = true;
+                                    } else {
+                                        lastNode = currentProc;                        
+                                        currentProc = currentProc.getPreviousProc();
+                                    }
+                                } 
+                            } 
+                        } 
+                    }   
+                }  
+            } while (endOfTree == false);
+            
+            os.print(output);
+        }
     } // end of printAllProcess()
     
     private class Proc
     {
         private String procLabel;
         private int virtualRuntime;
-        private Proc previousNode;
-        private Proc currentNode;
+        private Proc previousProc;
+        private Proc currentProc;
         private Proc leftChild;
         private Proc rightChild;
 
-        public Proc(String procLabel, int virtualRuntime, Proc currentNode) {
+        public Proc(String procLabel, int virtualRuntime) {
             this.procLabel = procLabel;
             this.virtualRuntime = virtualRuntime;
+            previousProc = null;
+            currentProc = null;
             leftChild = null;
             rightChild = null;;
         }
-
+        
+        public Proc getCurrentProc() {
+            return currentProc;
+        }
+        
+        public void setCurrentProc(Proc currentProc) {
+            this.currentProc = currentProc;
+        }
+        
         public String getProcLabel() {
             return procLabel;
         }
@@ -115,12 +352,30 @@ public class BinarySearchTreeRQ implements Runqueue {
             return virtualRuntime;
         }
 
-        public Proc getNext() {
-            return previousNode;
+        public Proc getLeft() {
+            return leftChild;
         }
-
-        public void setNext(Proc nextProc) {
-            this.previousNode = nextProc;
+        
+        public void setLeft(Proc leftChild) {
+            this.leftChild = leftChild;
         }
+        
+        public Proc getRight() {
+            return rightChild;
+        }     
+        
+        public void setRight(Proc rightChild) {
+            this.rightChild = rightChild;
+        }
+        
+        public Proc getPreviousProc() {
+            return previousProc;
+        }     
+        
+        public void setPreviousProc(Proc previousProc) {
+            this.previousProc = previousProc;
+        }
+        
+        
     } // end of inner class Node
 } // end of class BinarySearchTreeRQ
