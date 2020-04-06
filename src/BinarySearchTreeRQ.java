@@ -20,8 +20,6 @@ public class BinarySearchTreeRQ implements Runqueue {
         rootProc = null;
     }  // end of BinarySearchTreeRQ()
 
-
-
     /**
      * enqueue method - just checks if root is null
      * otherwise will recurse down tree from root to find appropriate place
@@ -75,7 +73,7 @@ public class BinarySearchTreeRQ implements Runqueue {
 
     /**
      * dequeue function - could try and rewrite to be recursive?
-     */
+    
     @Override
     public String dequeue() {
         // start at root node
@@ -110,9 +108,56 @@ public class BinarySearchTreeRQ implements Runqueue {
             return "no procs to dequeue";
         }
     } // end of dequeue()
+  */
+
+    @Override
+    public String dequeue(){
+        //return string to give back if no proc was dequeued
+        String returnString = "no procedures to dequeue";
+        //only run if rootProc exists
+        if (rootProc != null){
+
+            //get left-most-node's parent
+            Proc parent = returnSmallestParent(rootProc);
+
+            // if parent returned is root node we need to be careful
+            if (parent == rootProc){
+                //get root's label
+                returnString = rootProc.getProcLabel();
+
+                //if root has no children, safe to null it
+                if (rootProc.getRight() == null && rootProc.getLeft() == null){
+                    rootProc = null;
+                //if root has right child only
+                } else if (rootProc.getLeft() == null){
+                    rootProc = rootProc.getRight();
+                //if root only has left child delete it
+                } else {
+                    returnString = rootProc.getLeft().getProcLabel();
+                    rootProc.setLeft(null);
+                }
+            // if parent node returned is not root, we know there is a left-er node to delete instead        
+            } else {
+                returnString = parent.getLeft().getProcLabel();
+                deleteChildProc(parent, true);
+            }
+        }
+        return returnString;
+
+    }
 
     /**
-     * find method that will take a procedure node and a string
+     * returns true if the process is in the queue somewhere
+     * doesn't need to access any of the data/position of the node
+     */
+    @Override
+    public boolean findProcess(String procLabel) {
+        //runs recursive "find" method starting at rootnode
+        return rootProc != null ? find(rootProc, procLabel) : false;
+    } // end of findProcess()
+
+    /**
+     * Recursive method that will take a procedure node and a string
      * and recurse through the tree until it finds the string
      * (otherwise just returns false for not found anywhere)
      * 
@@ -140,25 +185,180 @@ public class BinarySearchTreeRQ implements Runqueue {
     }
 
     /**
-     * returns true if the process is in the queue somewhere
-     * doesn't need to access any of the data/position of the node
+     * Recursive method that will take a procedure node and a string
+     * and recurse through the tree until it finds the corresponding proc
+     * (otherwise just returns null)
+     * 
+     * @param proc - the procedure we're currently checking
+     * @param procLabel - the label that the user/file was trying to find
+     * @return - returns node if found, otherwise null
      */
-    @Override
-    public boolean findProcess(String procLabel) {
+    public Proc findProc(Proc proc, String procLabel){
 
-        //runs recursive "find" method starting at rootnode
-        if (rootProc != null){
-            return find(rootProc, procLabel);
-        } else {
-            return false;
+        Proc foundProc = null;
+
+        if (proc.getProcLabel() == procLabel){
+            foundProc = proc;
         }
-    
-    } // end of findProcess()
+
+        //check left node first (arbitrary, could check right first instead)
+        if (proc.getLeft() !=null && foundProc==null){
+            foundProc = findProc(proc.getLeft(), procLabel);
+        }
+
+        //check right node
+        if (proc.getRight() !=null  && foundProc==null){
+            foundProc = findProc(proc.getRight(), procLabel);
+        }
+        
+        return foundProc;
+    }
+
+    /**
+     * Helper function to return smallest Proc of tree from given Proc object
+     * @param proc - the proc object to start from
+     * @return will return the smallest proc (even if that the input proc)
+     */
+    public Proc returnSmallest(Proc proc){
+        return proc.getLeft() != null ? returnSmallest(proc.getLeft()) : proc;
+    }
+
+    /**
+     * Helper function that returns the -parent- of the smallest left leaf node
+     * @param proc
+     * @return
+     */
+    public Proc returnSmallestParent(Proc proc){
+        Proc left = proc.getLeft();
+        if (left != null){
+            if (left.getLeft() == null){
+                return proc;
+            } else {
+                return returnSmallestParent(left);
+            }
+        }
+        return proc;
+    }
+
+
+    public void deleteChildProc(Proc parent, boolean isLeft){
+
+        //if "isLeft" is true, get the left child of parent - otherwise right
+        Proc child = isLeft ? parent.getLeft() : parent.getRight();
+
+        System.out.println(child.getVirtualRuntime());
+
+        // no children, safe to delete
+        if (child.getLeft() == null && child.getRight() == null){
+
+            if(isLeft){
+                parent.setLeft(null); 
+            }
+            else {
+                parent.setRight(null);
+            }
+            
+        // only right child
+        } else if (child.getLeft() == null){
+
+            if(isLeft){
+                parent.setLeft(child.getRight()); 
+            }
+            else {
+                parent.setRight(child.getRight());
+            }
+
+        // only left child
+        } else if (child.getRight() == null){
+
+            if(isLeft){
+                parent.setLeft(child.getLeft()); 
+            }
+            else {
+                parent.setRight(child.getLeft());
+            }
+        // two children - uh oh
+        } else {
+            System.out.println("two children uh oh");
+
+            //store ref to smallest node from child subtree
+            Proc sml = returnSmallest(child.getRight());
+            System.out.println(sml.getVirtualRuntime());
+            //and it's parent
+            Proc smlParent = returnSmallestParent(child.getRight());
+
+            System.out.println(smlParent.getVirtualRuntime());
+
+            //and any right children it may have (can't have left because it's smallest)
+            Proc sRight = sml.getRight();
+
+            //store ref to node-to-be-deleted's children nodes
+            Proc cRight = child.getRight();
+            Proc cLeft = child.getLeft();
+            
+            //replace reference to deleted node with reference to smallest child
+            if(isLeft){
+                parent.setLeft(sml);
+            } else {
+                parent.setRight(sml);
+            }
+            //smallest node is now in place, set it's left children to what deleted node had
+            sml.setLeft(cLeft);
+        
+            //if smlParent is the same as small, we're already done and don't need to do any of this
+            if (smlParent != sml){
+                //set smallest node's right child to node-to-be-deleted's right children
+                sml.setRight(cRight);
+                //put the node-to-be-deleted in the place the smallest node used to occupy
+                smlParent.setLeft(child);
+                //set node-to-be-deleted's children to those the smallest node used to have
+                child.setLeft(null);
+                child.setRight(sRight);
+                //recursively run this function again on node to be deleted
+                deleteChildProc(smlParent, true);
+            }
+        }
+    }
 
 
     @Override
     public boolean removeProcess(String procLabel) {
         // Implement me
+
+        rootProc = new Proc("root", 9);
+
+        addProc(rootProc, new Proc("t1", 15));
+
+        addProc(rootProc, new Proc("t2", 10));
+
+        addProc(rootProc, new Proc("t3", 13));
+
+        addProc(rootProc, new Proc("t4", 23));
+
+        addProc(rootProc, new Proc("t5", 19));
+        
+        addProc(rootProc, new Proc("t6", 5));
+
+        addProc(rootProc, new Proc("t7", 9));
+
+        addProc(rootProc, new Proc("t8", 11));
+
+        addProc(rootProc, new Proc("t9", 40));
+
+        System.out.println(printProc(rootProc));
+
+        deleteChildProc(rootProc.getRight(), false);
+
+        // System.out.println(printProc(rootProc));
+
+        //System.out.println(findProc(rootProc, "t2").getProcLabel());
+
+        //System.out.println(rootProc.getLeft().getProcLabel());
+
+        //System.out.println("sml parent = " + returnSmallestParent(rootProc).getVirtualRuntime());
+        //switchDeleteRight(rootProc);
+
+        //System.out.println(returnSmallest(rootProc).getProcLabel());
 
         return false; // placeholder, modify this
     } // end of removeProcess()
@@ -312,6 +512,7 @@ public class BinarySearchTreeRQ implements Runqueue {
     @Override
     public void printAllProcesses(PrintWriter os) {
 
+
         os.flush();
 
         //if a root proc exists, recursively run printProc() and add output to "output" string
@@ -323,7 +524,7 @@ public class BinarySearchTreeRQ implements Runqueue {
         }
 
         os.println();
-        os.close();
+        //os.close();
     } // end of printAllProcess()   
     
     private class Proc
@@ -331,23 +532,30 @@ public class BinarySearchTreeRQ implements Runqueue {
         private String procLabel;
         private int virtualRuntime;
         private Proc previousProc;
-        private Proc currentProc;
         private Proc leftChild;
         private Proc rightChild;
 
         public Proc(String procLabel, int virtualRuntime) {
             this.procLabel = procLabel;
             this.virtualRuntime = virtualRuntime;
-            leftChild = null;
-            rightChild = null;;
+            this.leftChild = null;
+            this.rightChild = null;
         }
 
         public String getProcLabel() {
             return procLabel;
         }
 
+        public void setProcLabel(String label){
+            this.procLabel = label;
+        }
+
         public int getVirtualRuntime() {
             return virtualRuntime;
+        }
+
+        public void setVirtualRuntime(int runtime){
+            this.virtualRuntime = runtime;
         }
 
         public Proc getLeft() {
@@ -370,9 +578,7 @@ public class BinarySearchTreeRQ implements Runqueue {
             return previousProc;
         }     
         
-        public void setPreviousProc(Proc previousProc) {
-            this.previousProc = previousProc;
-        }
+
         
     } 
 } // end of class BinarySearchTreeRQ
