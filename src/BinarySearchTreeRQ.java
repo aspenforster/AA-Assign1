@@ -29,6 +29,13 @@ public class BinarySearchTreeRQ implements Runqueue {
     @Override
     public void enqueue(String procLabel, int vt) {
 
+        //need to check here for uniqueness of procLabel, if it exists
+        //just return as per discussion forum reply
+        if (findProcess(procLabel)){
+            return;
+        }
+
+        // if there's no root, make this process the root
         if (rootProc == null){
             rootProc = new Proc(procLabel, vt);
 
@@ -88,7 +95,6 @@ public class BinarySearchTreeRQ implements Runqueue {
             deleteProc(del);
         }
         return returnString;
-
     }
 
     /**
@@ -97,10 +103,13 @@ public class BinarySearchTreeRQ implements Runqueue {
      */
     @Override
     public boolean findProcess(String procLabel) {
-        //runs recursive "find" method starting at rootnode
-        if (find(rootProc, procLabel) !=null){
-            return true;
-        } 
+
+        if (rootProc != null){
+            //runs recursive "find" method starting at rootnode
+            if (find(rootProc, procLabel) !=null){
+                return true;
+            } 
+        }
         return false;
     } // end of findProcess()
 
@@ -173,9 +182,12 @@ public class BinarySearchTreeRQ implements Runqueue {
 
         Proc parent = proc.getParentProc();
 
+        System.out.println(proc.getLeft() + " " + proc.getRight() + " " + parent);
+
         //direction just used to represent left/right - left is true
         Boolean direction = true;
 
+        //if we're not at root, get child position from looking at parent runtime
         if(parent!=null){
             direction= parent.getVirtualRuntime() > proc.getVirtualRuntime();
         } 
@@ -192,7 +204,8 @@ public class BinarySearchTreeRQ implements Runqueue {
         // if we only have a right child
         } else if (proc.getLeft() == null){
             if(parent!=null){
-                setChild(parent, proc, direction);
+                System.out.println("we're here" + proc.getProcLabel());
+                setChild(parent, proc.getRight(), direction);
             //at root proc
             } else {
                 rootProc = proc.getRight();
@@ -201,8 +214,10 @@ public class BinarySearchTreeRQ implements Runqueue {
 
         //if we only have a left child
         } else if (proc.getRight() == null){
+            //if we're not at root proc
             if (parent!=null){
-                setChild(parent, proc, direction);
+                
+                setChild(parent, proc.getLeft(), direction);
             //at root proc
             } else {
                 rootProc = proc.getLeft();
@@ -272,11 +287,12 @@ public class BinarySearchTreeRQ implements Runqueue {
      */
     @Override
     public boolean removeProcess(String procLabel) {
-        // Implement me
-
+        
+        //if a rootProc exists, search tree for proclabel
         if(rootProc!=null){
             Proc del = find(rootProc, procLabel);
-            
+           
+            //if the node was found, delete it and return true
             if(del != null){
                 deleteProc(del);
                 return true;
@@ -345,7 +361,6 @@ public class BinarySearchTreeRQ implements Runqueue {
         } else{
             totalPreRuntime += proc.getRight()!= null ? findSucProcs(proc.getRight(), targetProc) : 0;
         }
-        System.out.println(totalPreRuntime);
         return totalPreRuntime;
     }
 
@@ -368,13 +383,16 @@ public class BinarySearchTreeRQ implements Runqueue {
     @Override
     public int precedingProcessTime(String procLabel){
         
+        //search tree for node with procLabel
         Proc p = find(rootProc, procLabel);
 
+        //if it exists, calculate process times before it
         if(p != null){
             //find preceeding proc times starting from root
             return findPreProcs(rootProc, p);
         }
 
+        //if node doesn't exist
         return -1;
     }
 
@@ -392,17 +410,20 @@ public class BinarySearchTreeRQ implements Runqueue {
     } // end of precedingProcessTime()
 
 
-    //recursive function for printing a procedure
+    /**
+     * Recursive helper method to print procs and their children
+     * @param proc proc to start search from - will recurse down both sides of tree
+     * @return returns string of this node and it's children
+     */
     public String printProc(Proc proc){
         String s = "";
-        
+
         //if there's a left node, run printProc() on that first
         if (proc.getLeft() != null){
             s += printProc(proc.getLeft());
         } 
-        //TO-DO: Comment out runtime print for submission!!
-        s += proc.getProcLabel() + " " + "-" + proc.getVirtualRuntime() + " ";
-
+        //add the node itself to the print 
+        s += proc.getProcLabel() + " ";
 
         //if there's a right node, run printProc() on that after printing this proc
         if (proc.getRight() != null){
@@ -432,7 +453,6 @@ public class BinarySearchTreeRQ implements Runqueue {
     {
         private String procLabel;
         private int virtualRuntime;
-        private Proc previousProc;
         private Proc leftChild;
         private Proc rightChild;
         private Proc parentProc;
@@ -471,10 +491,6 @@ public class BinarySearchTreeRQ implements Runqueue {
             if(rightChild!=null) rightChild.setParentProc(this);
             this.rightChild = rightChild;
         }
-        
-        public Proc getPreviousProc() {
-            return previousProc;
-        } 
         
         public Proc getParentProc(){
             return parentProc;
