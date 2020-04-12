@@ -1,94 +1,61 @@
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.ArrayList;
+
 
 public class Generate {
 
 
-    private static int listSize;
-    private static int numLists;
-    private static int seed;
-
     private static ProcessBuilder pb;
     private static PrintWriter pw;
 
-    private static ArrayList<double[]> timeRecords;
+    private static ProcessGenerator generator;
 
     public static void main(String[] args){
 
         try{
-            listSize = Integer.parseInt(args[0]);
-            numLists = Integer.parseInt(args[1]);
-            seed = Integer.parseInt(args[2]);
+            int listSize = Integer.parseInt(args[0]);
+            int numLists = Integer.parseInt(args[1]);
+            int seed = Integer.parseInt(args[2]);
+            String scenario = args[3];
+ 
+            pw = setupFileWriting();
+            if(scenario.equals("ALL")){
+                generator = generateInputFiles(listSize, numLists, seed, "EN");
+                generateTimeRecords(generator, pw);
+
+                generator = generateInputFiles(listSize, numLists, seed, "DE");
+                generateTimeRecords(generator, pw);
+
+                generator = generateInputFiles(listSize, numLists, seed, "PT");
+                generateTimeRecords(generator, pw);
+
+            } else {
+                generator = generateInputFiles(listSize, numLists, seed, scenario);
+                generateTimeRecords(generator, pw);
+            }
 
         } catch (Exception e){
             System.out.println("Wrong arguments parsed - try again");
             System.exit(1);
         }
 
-        timeRecords = new ArrayList<double[]>();
-
-        populateTimeRecords();
-
-
-        //check for existing record in csv, if it exists don't run again
-        Boolean foundRecord = false;
-
-        for(double[] record : timeRecords){
-            if (listSize == record[0] && numLists <= record[1] && seed == record[2]){
-                foundRecord = true;
-            }
-        }
-
-        if(!foundRecord){
-            generateInputFiles(listSize, numLists, seed);
-            //these double arrays are only lists of run times
-            generateTimeRecords(listSize, numLists, seed);
-            pw.close();
-
-        } else {
-            System.out.println("this record already exists in timedata.csv");
-        }
-
-        
-
+        pw.close();
     }
 
     /**
-     * Get previous time records in csv file
-     * if no previous records, make new file
-     * if previous records, populate timeRecords list
-     * and put printwriter in append mode
+     * open/create time data csv file
      */
-    public static void populateTimeRecords(){
+    public static PrintWriter setupFileWriting(){
 
         try {
             File timeFile = new File("timedata.csv");
-            if(timeFile.exists()){
-
-                BufferedReader br = new BufferedReader(new FileReader(timeFile));
-
-                String line = "";
-                while((line = br.readLine()) != null){
-                    String[] tempString = line.split(",");
-                    double[] tempDouble = new double[tempString.length]; 
-            
-                    for(int i =0; i < tempString.length; i++){
-                        
-                        tempDouble[i] = Double.parseDouble(tempString[i]);
-                    }
-                    
-                    timeRecords.add(tempDouble);
-                }
-
-                br.close();
-                
+            if(timeFile.exists()){                
                 //the second argument here puts it in append mode (rather than override)
                 FileWriter fwTime = new FileWriter(timeFile, true);
-                PrintWriter pw = new PrintWriter(fwTime);
+                pw = new PrintWriter(fwTime);
                 //pwTime.println("test again");
                 //pw.close();
             } else {
@@ -99,15 +66,16 @@ public class Generate {
             System.out.println("something went wrong");
             System.exit(1);
         }
+
+        return pw;
     }
     /**
      * Generate input files from list length, number of lists and seed provided in cmd line
      * saves in relative "inputs" folder
      */
-    public static void generateInputFiles(int listSize, int numLists, int seed){
+    public static ProcessGenerator generateInputFiles(int listSize, int numLists, int seed, String scenario){
         //generate input files based on supplied arguments
-        ProcessGenerator procGenerator = new ProcessGenerator(listSize, numLists, seed);
-        procGenerator.saveToFile();
+        return new ProcessGenerator(listSize, numLists, seed, scenario);
     }
 
     /**
@@ -119,11 +87,19 @@ public class Generate {
      * @param dataStruct - what data structure to record (array, linkedlist or tree)
      * @return
      */
-    public static double recordTime(int listSize, int listNum, int seed, String dataStruct){
-        String filePath = ".\\datagenfiles\\size"+listSize +"-list" + listNum + "(seed" + seed + ")";
+    public static double recordTime(ProcessGenerator generator, int listNum, String dataStruct){
+        String filePath = String.format(generator.getFileString(), listNum);
 
-        pb.command("java.exe", "src.RunqueueTester", dataStruct, filePath + ".in", filePath + ".out");  
+        //set up command to actually run runqueue tester
+        String[] command = {"javac", ".\\src\\RunqueueTester"};
+
+        //make proc builder object 
+        pb = new ProcessBuilder(command);
+
+        System.out.println(filePath);
         
+        pb.command("java.exe", "src/RunqueueTester", "tree", filePath + ".in", filePath + ".out");  
+
         long startTime = System.nanoTime();
         try {
             
@@ -133,41 +109,39 @@ public class Generate {
 
             long endTime = System.nanoTime();
 
+            BufferedReader reader = 
+            new BufferedReader(new InputStreamReader(process.getInputStream()));
+            StringBuilder builder = new StringBuilder();
+            String line = null;
+            while ( (line = reader.readLine()) != null) {
+                builder.append(line);
+                builder.append(System.getProperty("line.separator"));
+            }   
+            String result = builder.toString();
+    
+            System.out.println(result);
+
             return ((double)(endTime - startTime)) / Math.pow(10, 9);           
         } catch (Exception e){
             return -1;
         }
     }
 
-    public static void generateTimeRecords(int listSize, int numLists, int seed){
-         //set up command to actually run runqueue tester
-         String[] command = {"javac", ".\\src\\RunqueueTester"};
-
-         //make proc builder object 
-         pb = new ProcessBuilder(command);
-        
+    public static void generateTimeRecords(ProcessGenerator generator, PrintWriter pw){
         
          //iterate over the lists, retrieving the time taken for each one
-         for(int i=0; i < numLists; i++){
+         for(int i=0; i < generator.getNumList(); i++){
             String record = "";
-            record += listSize + ",";
-            record += i + ",";
-            record += seed + ",";
-            record += recordTime(listSize, i, seed, "array") + ",";
-            record += recordTime(listSize, i, seed, "linkedlist") + ",";
-            record += recordTime(listSize, i, seed, "tree");
-
+            record += "Seed" + generator.getSeed() + ",";
+            record += "Size" + generator.getListSize() + ",";
+            record += "i-" + i + ",";
+            record += recordTime(generator, i, "array") + ",";
+            record += recordTime(generator, i,"linkedlist") + ",";
+            record += recordTime(generator, i, "tree") + ",";
+            record += generator.getScenario();
+            System.out.println(record);
             pw.println(record);
          }
- 
-    }
-
-    public static void printAllRecords(){
-        for(double[] record : timeRecords){
-            for(int i=0; i < record.length; i++){
-                System.out.print(record[i] + ",");
-            }
-            System.out.println();
-        }
+         
     }
 }
