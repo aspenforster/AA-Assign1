@@ -11,6 +11,11 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "Generate Processes",
+            "type": "shell",
+            "command": "javac *.java ; java ProcessGenerator"
         }
     ]
 }

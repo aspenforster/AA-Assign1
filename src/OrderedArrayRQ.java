@@ -42,7 +42,6 @@ public class OrderedArrayRQ implements Runqueue {
     public OrderedArrayRQ() {
         // Implement Me
         procArray = new Proc[1];
-        System.out.println(procArray);
     }  // end of OrderedArrayRQ()
 
 
@@ -53,19 +52,14 @@ public class OrderedArrayRQ implements Runqueue {
         if (rightIndex >= leftIndex){
             
             int mid = leftIndex + (rightIndex - leftIndex)/2;
-            System.out.println("checking index " + mid + " in range " + leftIndex + " " + rightIndex);
             if (value == array[mid].virtualRuntime){
-                System.out.println("found at " + mid);
                 return mid;
             } else if (value > array[mid].virtualRuntime){
-                System.out.println("searching left half");
                 return binarySearchIndex(array, leftIndex, mid -1, value);
             } else if (value < array[mid].virtualRuntime){
-                System.out.println("searching right half");
                 return binarySearchIndex(array, mid + 1, rightIndex, value);
             }
         }
-        System.out.println("not found" + leftIndex + " " + rightIndex);
         //leftIndex at this point is the index that the new value should be put at
         //even if they're the same value (this will push a proc with the same runtime but longer on queue closer to being dequeued)
         return leftIndex;
@@ -95,18 +89,6 @@ public class OrderedArrayRQ implements Runqueue {
             procLength++;
             //copy across remaining values from original array at (original index) + 1
             System.arraycopy(procArray, procIndex, temp, procIndex + 1, procLength - 1 - procIndex);
-
-            System.out.print("procArray = ");
-            for(int i =0; i < procLength -1; i++){
-                System.out.print(procArray[i].getVirtualRuntime() + " ");
-            }
-            System.out.println();
-
-            System.out.print("temp = ");
-            for(int i=0; i < procLength; i++){
-                System.out.print(temp[i].getVirtualRuntime() + " ");
-            }
-            System.out.println();
 
             //replace old array with new one
             procArray = temp;
@@ -145,7 +127,6 @@ public class OrderedArrayRQ implements Runqueue {
         int procIndex = getProcessID(procLabel);
 
         if (procIndex >= 0){
-            System.out.println(procIndex);
             System.arraycopy(procArray, procIndex + 1, procArray, procIndex, procLength - procIndex - 1);
             procLength--;
             return true;
@@ -166,7 +147,6 @@ public class OrderedArrayRQ implements Runqueue {
             for(int i=procIndex + 1; i < procLength; i++){
                 preProcTime += procArray[i].getVirtualRuntime();
             }
-            System.out.println(preProcTime);
             return preProcTime;
         } 
         return -1;
@@ -192,10 +172,13 @@ public class OrderedArrayRQ implements Runqueue {
 
     @Override
     public void printAllProcesses(PrintWriter os) {
+
+        os.flush();
+
         for (int i = procLength -1; i >= 0; i--){
-            System.out.println(procArray[i].getLabel() + "-" + procArray[i].getVirtualRuntime());
+            os.print(procArray[i].getLabel() + " ");
         }
-        
+        os.println();
     } // end of printAllProcesses()
 
 

@@ -182,8 +182,6 @@ public class BinarySearchTreeRQ implements Runqueue {
 
         Proc parent = proc.getParentProc();
 
-        System.out.println(proc.getLeft() + " " + proc.getRight() + " " + parent);
-
         //direction just used to represent left/right - left is true
         Boolean direction = true;
 
@@ -204,7 +202,6 @@ public class BinarySearchTreeRQ implements Runqueue {
         // if we only have a right child
         } else if (proc.getLeft() == null){
             if(parent!=null){
-                System.out.println("we're here" + proc.getProcLabel());
                 setChild(parent, proc.getRight(), direction);
             //at root proc
             } else {
@@ -305,7 +302,6 @@ public class BinarySearchTreeRQ implements Runqueue {
 
     public int findPreProcs(Proc proc, Proc targetProc){
 
-        System.out.println("visiting node " + proc.getVirtualRuntime());
         int totalPreRuntime = 0;
 
         //if target proc is the proc we're on (not just runtime, label as well)
@@ -330,13 +326,10 @@ public class BinarySearchTreeRQ implements Runqueue {
         } else{
             totalPreRuntime += proc.getLeft()!= null ? findPreProcs(proc.getLeft(), targetProc) : 0;
         }
-        System.out.println(totalPreRuntime);
         return totalPreRuntime;
     }
 
     public int findSucProcs(Proc proc, Proc targetProc){
-
-        System.out.println("visiting node " + proc.getVirtualRuntime());
         int totalPreRuntime = 0;
 
         //if target proc is the proc we're on (not just runtime, label as well)
