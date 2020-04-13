@@ -23,12 +23,16 @@ public class OrderedLinkedListRQ implements Runqueue {
     @Override
     public void enqueue(String procLabel, int vt) {
         
+
         Proc newNode = new Proc(procLabel, vt);
         
         if(FirstProc == null) {
             FirstProc = newNode;
         }
         else {
+            if(findProcess(procLabel)){
+                return;
+            }
             // need to search through and compare vt and then insert
             // Processes that have the same vruntime follow the FIFO order.
             // Therefore vt needs to be less than node validating against (loop) thought all nodes and stop at null
@@ -129,11 +133,12 @@ public class OrderedLinkedListRQ implements Runqueue {
         int totalTime = 0;
         
         while (currentProc != null) {
-            totalTime += currentProc.getVirtualRuntime();
-            
             if (procLabel.equals(currentProc.getProcLabel())) {
                 return totalTime;
             }
+
+            totalTime += currentProc.getVirtualRuntime();
+            
             currentProc = currentProc.getNext();
         }
 
@@ -148,14 +153,14 @@ public class OrderedLinkedListRQ implements Runqueue {
         boolean nodeFound = false;
         
         while (currentProc != null) {
+            if (nodeFound == true){
+                totalTime += currentProc.getVirtualRuntime();
+            }
             
             if (procLabel.equals(currentProc.getProcLabel())) {
                 nodeFound = true;
             }
             
-            if (nodeFound == true){
-                totalTime += currentProc.getVirtualRuntime();
-            }
             currentProc = currentProc.getNext();
         }
         
@@ -170,6 +175,9 @@ public class OrderedLinkedListRQ implements Runqueue {
 
     @Override
     public void printAllProcesses(PrintWriter os) {
+
+        os.flush();
+
         Proc currentProc = FirstProc;
         String output = "";
         
@@ -180,7 +188,7 @@ public class OrderedLinkedListRQ implements Runqueue {
             currentProc = currentProc.getNext();
         }
         
-        os.print(output);
+        os.println(output);
 
     } // end of printAllProcess()
     

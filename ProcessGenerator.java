@@ -83,8 +83,6 @@ public class ProcessGenerator{
                 for(String s : list){
                     p.println(s);
                 }
-
-                p.println("PA");
                 p.close();
                 listCount++;
             }

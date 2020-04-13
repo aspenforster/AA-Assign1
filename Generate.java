@@ -19,8 +19,6 @@ public class Generate {
     private static HashMap<List<String>, List<TimeRecord>> timeRecords;
 
 
-
-
     public static void main(String[] args){
 
         try{
@@ -36,6 +34,7 @@ public class Generate {
             pw = setupRecordsFile();
 
             if(operation.equals("ALL")){
+                
                 generator = generateInputFiles(listSize, numLists, seed, "EN");
                 generateTimeRecords(generator, pw);
 
