@@ -1,45 +1,21 @@
 public class TimeRecord{
 
-    private String type;
-    private String operation;
+    private final int seed;
+    private final int iteration;
     private int count;
     private double totalTime;
 
-    public String getType() {
-        return this.type;
+    public int getSeed(){
+        return seed;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public int getIteration(){
+        return iteration;
     }
 
-    public String getOperation() {
-        return this.operation;
-    }
-
-    public void setOperation(String operation) {
-        this.operation = operation;
-    }
-
-    public int getCount() {
-        return this.count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
-    }
-
-    public double getTotalTime() {
-        return this.totalTime;
-    }
-
-    public void setTotalTime(double totalTime) {
-        this.totalTime = totalTime;
-    }
-
-    public TimeRecord(String operation, String type, int count, double totalTime){
-        this.operation = operation;
-        this.type = type;
+    public TimeRecord(int seed, int iteration, int count, double totalTime){
+        this.seed = seed;
+        this.iteration = iteration;
         this.count = count;
         this.totalTime = totalTime;
     }
@@ -54,7 +30,7 @@ public class TimeRecord{
     }
 
     public String toString(){
-        return "(" + operation+ "," + type+ "," + count + "," + totalTime + "," + getAverage() + ")";
+        return "(" + seed+ "," + iteration+ "," + count + "," + totalTime + "," + getAverage() + ")";
     }
 
 }

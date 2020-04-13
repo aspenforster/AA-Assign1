@@ -1,2 +1,10 @@
-seed, listSize, iteration-1, operation-1, type-1, count-1, totalTime-1, avgTime-1, iteration-2, operation-2, type-2, count-2, totalTime-2, avgTime-2, operation-3, type-3, count-3, totalTime-3, avgTime-3
-123,50,0,EN,array,1,0.094329,0.094329,EN,linkedlist,1,0.0900459,0.0900459,EN,tree,1,0.0985528,0.0985528,DE,array,1,0.091093,0.091093,DE,linkedlist,1,0.0928908,0.0928908,DE,tree,1,0.0989136,0.0989136,PT,array,1,0.1246179,0.1246179,PT,linkedlist,1,0.1121598,0.1121598,PT,tree,1,0.105641,0.105641
+operation, data structure, listSize, seed, iteration, run count, total time, avg time
+DE,array,50,123,0,4,0.396235,0.09905875
+EN,linkedlist,50,123,0,4,0.4221054,0.10552635
+PT,array,50,123,0,4,0.3783875,0.094596875
+PT,linkedlist,50,123,0,4,0.3756107,0.093902675
+DE,tree,50,123,0,4,0.3815013,0.095375325
+EN,array,50,123,0,4,0.3735967,0.093399175
+DE,linkedlist,50,123,0,4,0.4000784,0.1000196
+EN,tree,50,123,0,4,0.3924878,0.09812195
+PT,tree,50,123,0,4,0.385992,0.096498

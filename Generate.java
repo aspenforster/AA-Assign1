@@ -16,9 +16,9 @@ public class Generate {
 
     private static ProcessGenerator generator;
 
-    private static HashMap<List<Integer>, List<TimeRecord>> timeRecords;
+    private static HashMap<List<String>, List<TimeRecord>> timeRecords;
 
-    
+
 
 
     public static void main(String[] args){
@@ -31,7 +31,7 @@ public class Generate {
             String operation = args[3];
 
             //initialise the timeRecords dictionary
-            timeRecords = new HashMap<List<Integer>, List<TimeRecord>>();
+            timeRecords = new HashMap<List<String>, List<TimeRecord>>();
  
             pw = setupRecordsFile();
 
@@ -72,6 +72,7 @@ public class Generate {
                 BufferedReader br = new BufferedReader(new FileReader(timeFile));
 
                 String line = "";
+                String firstLineGarbage = br.readLine();
                 while((line = br.readLine()) != null){
                     //get rid of whitespaces in csv line (if any)
                     line = line.replaceAll("\\s", "");
@@ -79,16 +80,11 @@ public class Generate {
                     //split csv line into array of strings
                     String[] tempString = line.split(",");
 
-                    //"key" values
-                    int seed = Integer.parseInt(tempString[0]);
-                    int size = Integer.parseInt(tempString[1]);
-                    int index = Integer.parseInt(tempString[2]);
+                    List<String> keyList = new ArrayList<String>();
 
-                    List<Integer> keyList = new ArrayList<Integer>();
-
-                    keyList.add(seed);
-                    keyList.add(size);
-                    keyList.add(index);
+                    keyList.add(tempString[0]);
+                    keyList.add(tempString[1]);
+                    keyList.add(tempString[2]);
 
                     //make a list to hold records for this configuration, if any
                     List<TimeRecord> recordList = new ArrayList<TimeRecord>();
@@ -99,8 +95,16 @@ public class Generate {
                         for(int i = 3; i < tempString.length; i+=5){
                             //read in next 5 values to create time record
                             //don't need to read in average value which would be at tempString[i+4] as the timerecord object can calculate that itself
-                            //TimeRecord(operation, data structure, count, totalTime, avgTime)
-                            TimeRecord t = new TimeRecord(tempString[i], tempString[i+1], Integer.parseInt(tempString[i+2]), Double.parseDouble(tempString[i+3]));
+
+                            //public TimeRecord(int seed, int iteration, int count, double totalTime){
+                            int seed = Integer.parseInt(tempString[i]);
+                            int iteration = Integer.parseInt(tempString[i+1]);
+                            int count = Integer.parseInt(tempString[i+2]);
+                            double totalTime = Double.parseDouble(tempString[i+3]);
+                            //double avgTime = Double.parseDouble(tempString[i+4]);
+
+                            TimeRecord t = new TimeRecord(seed, iteration, count, totalTime);
+
                             recordList.add(t);
                         }
                     }
@@ -166,22 +170,22 @@ public class Generate {
 
             double timeResult = ((double)(endTime-startTime)) / Math.pow(10, 9);
 
-            List<Integer> keyList = new ArrayList<Integer>();
+            List<String> keyList = new ArrayList<String>();
 
-            keyList.add(generator.getSeed());
-            keyList.add(generator.getListSize());
-            keyList.add(listNum);
+            keyList.add(generator.getOperation());
+            keyList.add(dataStruct);
+            keyList.add(Integer.toString(generator.getListSize()));
 
-            TimeRecord t = new TimeRecord("err", "err", 0, 0);
+            TimeRecord t = new TimeRecord(0, 0, 0, 0.0);
             //if this key already exists in records
             if(timeRecords.get(keyList) != null){
                 //loop over each time record associated with this key
                 boolean existingRecord = false;
                 for(TimeRecord tR : timeRecords.get(keyList)){
                     
-                    //if the operation (EN, DE, PT) AND type (array, linkedlist, BST) match 
-                    // we have an existing record for this config, grab a reference to that for further down
-                    if (tR.getType().equals(dataStruct) && tR.getOperation().equals(generator.getOperation()) && !existingRecord){
+                    //if the seed and iteration number are the same, we've already run this config
+                    //and should add new time to exisiting record
+                    if (tR.getSeed() == generator.getSeed() && tR.getIteration() == listNum && !existingRecord){
                         t = tR;
                         existingRecord = true;   
                     }
@@ -193,13 +197,13 @@ public class Generate {
                 // if there was no existing record, make a new one
                 } else {
                         //public TimeRecord(String operation, String type, int count, double totalTime)
-                        t = new TimeRecord(generator.getOperation(), dataStruct, 1, timeResult);
+                        t = new TimeRecord(generator.getSeed(), listNum, 1, timeResult);
                         timeRecords.get(keyList).add(t);
                 }
             //if this key doesn't exist in timeRecords, set up new time record list and add it and it's key to timeRecords
             } else {
                 List<TimeRecord> timeList = new ArrayList<TimeRecord>();
-                t = new TimeRecord(generator.getOperation(), dataStruct, 1, timeResult);
+                t = new TimeRecord(generator.getSeed(), listNum, 1, timeResult);
                 timeList.add(t);
                 timeRecords.put(keyList, timeList);
             }
@@ -226,9 +230,9 @@ public class Generate {
         //private static HashMap<List<Integer>, List<TimeRecord>> timeRecords;
 
         //write headers here
-        pw.println("seed, listSize, iteration-1, operation-1, type-1, count-1, totalTime-1, avgTime-1, iteration-2, operation-2, type-2, count-2, totalTime-2, avgTime-2, operation-3, type-3, count-3, totalTime-3, avgTime-3");
+        pw.println("operation, data structure, listSize, seed, iteration, run count, total time, avg time");
 
-        for(Map.Entry<List<Integer>, List<TimeRecord>> entry : timeRecords.entrySet()){
+        for(Map.Entry<List<String>, List<TimeRecord>> entry : timeRecords.entrySet()){
             String record = entry.toString();
             record = record.replaceAll("\\[|\\]|\\s|\\(|\\)", "");
             record = record.replaceAll("\\=", ",");
