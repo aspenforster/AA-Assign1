@@ -11,14 +11,14 @@ public class ProcessGenerator{
     private int numList;
     private int seed;
     private String fileString;
-    private String scenario;
+    private String operation;
 
-    public ProcessGenerator(int listSize, int numList, int seed, String scenario){
+    public ProcessGenerator(int listSize, int numList, int seed, String operation){
         this.listSize = listSize;
         this.numList = numList;
         this.seed = seed;
-        this.fileString = "./datagenfiles/size"+ listSize + "-list%d(seed" + seed + ")-" + scenario;
-        this.scenario = scenario;
+        this.fileString = "./datagenfiles/size"+ listSize + "-list%d(seed" + seed + ")-" + operation;
+        this.operation = operation;
         randomLists = new ArrayList<ArrayList<String>>();
 
         Random r = new Random(seed);
@@ -30,17 +30,17 @@ public class ProcessGenerator{
                 tempList.add("EN P" + j + " " +  r.nextInt(100));
             }
             
-            if(scenario.equals("DE")){
+            if(operation.equals("DE")){
                 for(int j=0; j< listSize; j++){
                     tempList.add("DE");
                 }
             }
 
-            if(scenario.equals("PT")){
+            if(operation.equals("PT")){
                 tempList.add("PT P" +randomIndex);
             }
             randomLists.add(tempList);
-            saveToFile(scenario);
+            saveToFile();
         }
     }
 
@@ -56,8 +56,8 @@ public class ProcessGenerator{
         return seed;
     }
 
-    public String getScenario(){
-        return scenario;
+    public String getOperation(){
+        return operation;
     }
 
     public String getFileString(){
@@ -75,9 +75,8 @@ public class ProcessGenerator{
         }
     }
 
-    public void saveToFile(String scenario){
+    public void saveToFile(){
         try {
-            File f = new File("./");
             int listCount = 0;
             for(ArrayList<String> list : randomLists){
                 PrintWriter p = new PrintWriter(new File(String.format(fileString, listCount) + ".in"));
