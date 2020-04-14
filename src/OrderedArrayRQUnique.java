@@ -12,7 +12,7 @@ import java.lang.String;
  *
  * @author Sajal Halder, Minyi Li, Jeffrey Chan
  */
-public class OrderedArrayRQ implements Runqueue {
+public class OrderedArrayRQUnique implements Runqueue {
 
     private class Proc{
 
@@ -39,7 +39,7 @@ public class OrderedArrayRQ implements Runqueue {
     /**
      * Constructs empty queue
      */
-    public OrderedArrayRQ() {
+    public OrderedArrayRQUnique() {
         // Implement Me
         procArray = new Proc[1];
     }  // end of OrderedArrayRQ()

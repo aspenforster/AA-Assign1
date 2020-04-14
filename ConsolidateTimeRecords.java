@@ -9,18 +9,19 @@ import jdk.jfr.events.FileWriteEvent;
 public class ConsolidateTimeRecords {
     
     public static void main(String[] args){
-        makeTidyCSV();
+        makeTidyCSV("timedata.csv", "cleantimedata.csv");
+        makeTidyCSV("timedata_unique.csv", "cleantimedata_unique.csv");
     }
 
 
-    public static void makeTidyCSV(){
+    public static void makeTidyCSV(String originalCSV, String cleanCSV){
         try {
 
-            File file = new File("timedata.csv");
+            File file = new File(originalCSV);
 
             System.out.println(file);
 
-            File outputfile = new File("cleantimedata.csv");
+            File outputfile = new File(cleanCSV);
 
             FileWriter fw = new FileWriter(outputfile);
             PrintWriter pw = new PrintWriter(fw);

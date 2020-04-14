@@ -12,11 +12,11 @@ import java.lang.String;
  *
  * @author Sajal Halder, Minyi Li, Jeffrey Chan
  */
-public class BinarySearchTreeRQ implements Runqueue {
+public class BinarySearchTreeRQUnique implements Runqueue {
     
     private Proc rootProc;
         
-    public BinarySearchTreeRQ() {
+    public BinarySearchTreeRQUnique() {
         rootProc = null;
     }  // end of BinarySearchTreeRQ()
 
@@ -31,9 +31,9 @@ public class BinarySearchTreeRQ implements Runqueue {
 
         //need to check here for uniqueness of procLabel, if it exists
         //just return as per discussion forum reply
-        // if (findProcess(procLabel)){
-        //     return;
-        // }
+        if (findProcess(procLabel)){
+            return;
+        }
 
         // if there's no root, make this process the root
         if (rootProc == null){

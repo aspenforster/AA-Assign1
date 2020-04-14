@@ -18,6 +18,8 @@ public class Generate {
 
     private static HashMap<List<String>, List<TimeRecord>> timeRecords;
 
+    private static boolean unique;
+
 
     public static void main(String[] args){
 
@@ -27,6 +29,7 @@ public class Generate {
             int seed = Integer.parseInt(args[2]);
             //operation is "EN", "DE" or "PT"
             String operation = args[3];
+            unique = Boolean.parseBoolean(args[4]);
 
             //initialise the timeRecords dictionary
             timeRecords = new HashMap<List<String>, List<TimeRecord>>();
@@ -82,7 +85,13 @@ public class Generate {
     public static PrintWriter setupRecordsFile(){
 
         try {
-            File timeFile = new File("timedata.csv");
+            String fileName = "";
+            if(unique){
+                fileName = "timedata_unique.csv";
+            } else {
+                fileName = "timedata.csv";
+            }
+            File timeFile = new File(fileName);
             if(timeFile.exists()){     
 
                 BufferedReader br = new BufferedReader(new FileReader(timeFile));
@@ -139,7 +148,7 @@ public class Generate {
                 pw = new PrintWriter(fwTime);
             } else {
                 //make timedata.csv if it didn't exist
-                pw = new PrintWriter(new File("timedata.csv"));
+                pw = new PrintWriter(new File(fileName));
             }
 
         } catch (Exception e){
@@ -162,13 +171,19 @@ public class Generate {
     public static double recordTime(ProcessGenerator generator, int listNum, String dataStruct){
         String filePath = String.format(generator.getFileString(), listNum);
 
+        String cmdString;
+        if (unique){
+            cmdString = ".\\src\\RunqueueTesterUnique";
+        } else {
+            cmdString = ".\\src\\RunqueueTester";
+        }
         //set up command to actually run runqueue tester
-        String[] command = {"javac", ".\\src\\RunqueueTester"};
+        String[] command = {"javac", cmdString};
 
         //make proc builder object 
         pb = new ProcessBuilder(command);
         
-        pb.command("java.exe", "src/RunqueueTester", dataStruct, filePath + ".in", filePath + ".out");  
+        pb.command("java.exe", cmdString, dataStruct, filePath + ".in", filePath + ".out");  
 
         long startTime = System.nanoTime();
         try {
