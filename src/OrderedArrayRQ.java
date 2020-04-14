@@ -67,6 +67,11 @@ public class OrderedArrayRQ implements Runqueue {
 
     @Override
     public void enqueue(String procLabel, int vt) {
+
+        // UNIQUENESS CHECK
+        if (findProcess(procLabel)){
+            return;
+        }
         //array empty
         if (procLength == 0)
         {

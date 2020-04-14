@@ -30,6 +30,7 @@ public class OrderedLinkedListRQ implements Runqueue {
             FirstProc = newNode;
         }
         else {
+            //UNIQUENESS CHECK
             if(findProcess(procLabel)){
                 return;
             }

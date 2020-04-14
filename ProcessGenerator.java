@@ -13,36 +13,40 @@ public class ProcessGenerator{
     private String fileString;
     private String operation;
 
-    public ProcessGenerator(int listSize, int numList, int seed, String operation){
+
+    public ProcessGenerator(int listSize, int numList, int seed, String operation, boolean writeToFile){
         this.listSize = listSize;
         this.numList = numList;
         this.seed = seed;
         this.fileString = "./datagenfiles/size"+ listSize + "-list%d(seed" + seed + ")-" + operation;
         this.operation = operation;
-        randomLists = new ArrayList<ArrayList<String>>();
+        if (writeToFile){
+            randomLists = new ArrayList<ArrayList<String>>();
 
-        Random r = new Random(seed);
+            Random r = new Random(seed);
         
-        for(int i=0; i < numList; i++){
-            int randomIndex = r.nextInt(listSize);
-            ArrayList<String> tempList = new ArrayList<String>();
-            for(int j=0; j < listSize; j++){
-                tempList.add("EN P" + j + " " +  r.nextInt(100));
-            }
-            
-            if(operation.equals("DE")){
-                for(int j=0; j< listSize; j++){
-                    tempList.add("DE");
+            for(int i=0; i < numList; i++){
+                int randomIndex = r.nextInt(listSize);
+                ArrayList<String> tempList = new ArrayList<String>();
+                for(int j=0; j < listSize; j++){
+                    tempList.add("EN P" + j + " " +  r.nextInt(100));
                 }
+                
+                if(operation.equals("DE")){
+                    for(int j=0; j< listSize; j++){
+                        tempList.add("DE");
+                    }
+                }
+    
+                if(operation.equals("PT")){
+                    tempList.add("PT P" +randomIndex);
+                }
+                randomLists.add(tempList);
+                saveToFile();
             }
-
-            if(operation.equals("PT")){
-                tempList.add("PT P" +randomIndex);
-            }
-            randomLists.add(tempList);
-            saveToFile();
         }
     }
+
 
     public int getListSize(){
         return listSize;

@@ -33,19 +33,36 @@ public class Generate {
  
             pw = setupRecordsFile();
 
+            List<String> keyList = new ArrayList<String>();
+
+            keyList.add(operation);
+            keyList.add("tree");
+            keyList.add(Integer.toString(listSize));
+
+            boolean writeToFile = false;
+
+            //if all was input, make processes for EN, DE and PT
             if(operation.equals("ALL")){
-                
-                generator = generateInputFiles(listSize, numLists, seed, "EN");
+
+                if (timeRecords.get(keyList) == null){
+                    writeToFile = true;
+                }
+
+                generator = new ProcessGenerator(listSize, numLists, seed, "EN", writeToFile);
+            
                 generateTimeRecords(generator, pw);
 
-                generator = generateInputFiles(listSize, numLists, seed, "DE");
+                generator = new ProcessGenerator(listSize, numLists, seed, "DE", writeToFile);
+            
                 generateTimeRecords(generator, pw);
 
-                generator = generateInputFiles(listSize, numLists, seed, "PT");
+                generator = new ProcessGenerator(listSize, numLists, seed, "PT", writeToFile);
+            
                 generateTimeRecords(generator, pw);
 
             } else {
-                generator = generateInputFiles(listSize, numLists, seed, operation);
+                generator = new ProcessGenerator(listSize, numLists, seed, operation, writeToFile);
+            
                 generateTimeRecords(generator, pw);
             }
 
@@ -71,7 +88,10 @@ public class Generate {
                 BufferedReader br = new BufferedReader(new FileReader(timeFile));
 
                 String line = "";
-                String firstLineGarbage = br.readLine();
+
+                //dump first line in csv that stores headers
+                br.readLine();
+                
                 while((line = br.readLine()) != null){
                     //get rid of whitespaces in csv line (if any)
                     line = line.replaceAll("\\s", "");
@@ -128,14 +148,6 @@ public class Generate {
         }
 
         return pw;
-    }
-    /**
-     * Generate input files from list length, number of lists and seed provided in cmd line
-     * saves in relative "inputs" folder
-     */
-    public static ProcessGenerator generateInputFiles(int listSize, int numLists, int seed, String operation){
-        //generate input files based on supplied arguments
-        return new ProcessGenerator(listSize, numLists, seed, operation);
     }
 
     /**

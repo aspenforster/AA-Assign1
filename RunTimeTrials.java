@@ -1,8 +1,8 @@
 public class RunTimeTrials {
 
-    public static final int[] listSizes = {10, 50, 100, 500, 1000, 5000, 10000, 50000};
-    public static final int[] iterations = {500, 200, 300, 100, 50, 30, 10, 10};
-    public static final int[] seeds = {123, 69, 420, 666, 333, 1137, 1, 0};
+    public static final int[] listSizes = {10, 50, 100, 500, 1000, 5000, 10000};
+    public static final int[] iterations = {200, 200, 100, 100, 50, 25, 10};
+    public static final int[] seeds = {123, 69, 420, 666, 333, 1137, 1};
     public static void main(String[] args) {
 
         //run same inputs 5 times each to get proper average
