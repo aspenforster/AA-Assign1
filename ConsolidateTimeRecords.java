@@ -3,12 +3,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.util.Date;
 
-import jdk.jfr.events.FileWriteEvent;
 
 public class ConsolidateTimeRecords {
     
     public static void main(String[] args){
+        System.out.println(new Date());
         makeTidyCSV("timedata.csv", "cleantimedata.csv");
         makeTidyCSV("timedata_unique.csv", "cleantimedata_unique.csv");
     }
@@ -28,7 +29,6 @@ public class ConsolidateTimeRecords {
 
             if (!file.exists()){
                 System.out.println("no time data file found");
-                System.exit(1);
             } else {
                 BufferedReader br = new BufferedReader(new FileReader(file));
 

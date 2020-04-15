@@ -27,45 +27,48 @@ public class Generate {
             int listSize = Integer.parseInt(args[0]);
             int numLists = Integer.parseInt(args[1]);
             int seed = Integer.parseInt(args[2]);
-            //operation is "EN", "DE" or "PT"
+            //operation is "EN", "DE" or "PT" or "ALL"
             String operation = args[3];
             unique = Boolean.parseBoolean(args[4]);
 
             //initialise the timeRecords dictionary
             timeRecords = new HashMap<List<String>, List<TimeRecord>>();
- 
+
             pw = setupRecordsFile();
 
             List<String> keyList = new ArrayList<String>();
 
             keyList.add(operation);
-            keyList.add("tree");
+            keyList.add("array");
             keyList.add(Integer.toString(listSize));
 
             boolean writeToFile = false;
 
+
+            if (timeRecords.get(keyList) ==null){
+              writeToFile = true;
+            }
+
+
+
             //if all was input, make processes for EN, DE and PT
             if(operation.equals("ALL")){
 
-                if (timeRecords.get(keyList) == null){
-                    writeToFile = true;
-                }
-
                 generator = new ProcessGenerator(listSize, numLists, seed, "EN", writeToFile);
-            
+
                 generateTimeRecords(generator, pw);
 
                 generator = new ProcessGenerator(listSize, numLists, seed, "DE", writeToFile);
-            
+
                 generateTimeRecords(generator, pw);
 
                 generator = new ProcessGenerator(listSize, numLists, seed, "PT", writeToFile);
-            
+
                 generateTimeRecords(generator, pw);
 
             } else {
                 generator = new ProcessGenerator(listSize, numLists, seed, operation, writeToFile);
-            
+
                 generateTimeRecords(generator, pw);
             }
 
@@ -92,7 +95,8 @@ public class Generate {
                 fileName = "timedata.csv";
             }
             File timeFile = new File(fileName);
-            if(timeFile.exists()){     
+
+            if(timeFile.exists()){
 
                 BufferedReader br = new BufferedReader(new FileReader(timeFile));
 
@@ -100,7 +104,7 @@ public class Generate {
 
                 //dump first line in csv that stores headers
                 br.readLine();
-                
+
                 while((line = br.readLine()) != null){
                     //get rid of whitespaces in csv line (if any)
                     line = line.replaceAll("\\s", "");
@@ -137,7 +141,7 @@ public class Generate {
                         }
                     }
                     //finally, add time record objects to dictionary
-                    timeRecords.put(keyList, recordList);  
+                    timeRecords.put(keyList, recordList);
                 }
 
                 br.close();
@@ -163,7 +167,7 @@ public class Generate {
      * Helper function, returns the running time of RunqueueTester program
      * or -1 if something went wrong
      * @param listSize - length of list we're recording
-     * @param listNum - the index of the list we're recording time for 
+     * @param listNum - the index of the list we're recording time for
      * @param seed - the seed the list was generated with
      * @param dataStruct - what data structure to record (array, linkedlist or tree)
      * @return
@@ -171,23 +175,23 @@ public class Generate {
     public static double recordTime(ProcessGenerator generator, int listNum, String dataStruct){
         String filePath = String.format(generator.getFileString(), listNum);
 
-        String cmdString;
+        String cmdString = ".\\src\\RunqueueTester";
+        String otherString = "src/RunqueueTester";
         if (unique){
-            cmdString = ".\\src\\RunqueueTesterUnique";
-        } else {
-            cmdString = ".\\src\\RunqueueTester";
+            cmdString +="Unique";
+            otherString +="Unique";
         }
         //set up command to actually run runqueue tester
         String[] command = {"javac", cmdString};
 
-        //make proc builder object 
+        //make proc builder object
         pb = new ProcessBuilder(command);
-        
-        pb.command("java.exe", cmdString, dataStruct, filePath + ".in", filePath + ".out");  
+
+        pb.command("java.exe", otherString, dataStruct, filePath + ".in", filePath + ".out");
 
         long startTime = System.nanoTime();
         try {
-            
+
             Process process = pb.start();
 
             int returnValue = process.waitFor();
@@ -208,18 +212,18 @@ public class Generate {
                 //loop over each time record associated with this key
                 boolean existingRecord = false;
                 for(TimeRecord tR : timeRecords.get(keyList)){
-                    
+
                     //if the seed and iteration number are the same, we've already run this config
                     //and should add new time to exisiting record
                     if (tR.getSeed() == generator.getSeed() && tR.getIteration() == listNum && !existingRecord){
                         t = tR;
-                        existingRecord = true;   
+                        existingRecord = true;
                     }
                 }
                 //add this result to the existing time record for this config, rather than making a new time record
                 if (existingRecord){
                     t.addTime(timeResult);
-                
+
                 // if there was no existing record, make a new one
                 } else {
                         //public TimeRecord(String operation, String type, int count, double totalTime)
@@ -234,8 +238,9 @@ public class Generate {
                 timeRecords.put(keyList, timeList);
             }
 
-            return timeResult;       
+            return timeResult;
         } catch (Exception e){
+            e.printStackTrace();
             return -1;
         }
     }
@@ -246,7 +251,7 @@ public class Generate {
             recordTime(generator, i, "array");
             recordTime(generator, i,"linkedlist");
             recordTime(generator, i, "tree");
-         } 
+         }
     }
 
 

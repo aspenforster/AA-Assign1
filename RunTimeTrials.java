@@ -1,7 +1,9 @@
+import java.util.Date;
+
 public class RunTimeTrials {
 
-    public static final int[] listSizes = {50, 100, 500, 1000, 5000, 10000, 18000, 25000, 35000, 45000, 50000};
-    public static final int[] iterations = {200, 200, 100, 100, 100, 50, 50, 25, 25, 10, 10};
+    public static final int[] listSizes = {45000, 50000};
+    public static final int[] iterations = {10, 10};
     public static final int[] seeds = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     public static void main(String[] args) {
 
@@ -21,17 +23,16 @@ public class RunTimeTrials {
                 for(int i=0; i < listSizes.length; i++){
                     try{
                         String[] command = {"javac", "C:\\Users\\aspen\\Desktop\\Masters\\_A+A\\AA-Assign1"};
-            
+
                         ProcessBuilder processBuilder = new ProcessBuilder(command);
-                
+
                         ProcessBuilder p = processBuilder.command("java.exe", "Generate", Integer.toString(listSizes[i]), Integer.toString(iterations[i]), Integer.toString(seeds[i]), "ALL", uniqueness);
-                
+
                         System.out.println(p.command());
-                
                         Process process = processBuilder.start();
-                
+
                         int ret = process.waitFor();
-                
+
                         System.out.printf("Program exited with code: %d", ret);
                         System.out.println();
                     } catch (Exception e){
@@ -39,10 +40,10 @@ public class RunTimeTrials {
                         System.exit(-1);
                     }
                 }
+              System.out.println("Loop " + j + " completed" + new Date());
             }
         }
- 
-       
+
     }
 
 }
